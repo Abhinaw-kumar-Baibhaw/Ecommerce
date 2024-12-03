@@ -3,6 +3,7 @@ package com.FullFledgedEcommerce.controller;
 import com.FullFledgedEcommerce.entites.User;
 import com.FullFledgedEcommerce.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
@@ -26,6 +27,7 @@ public class UserController {
     }
 
 
+    @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping("/getById/{id}")
     public Optional<User> getById(@PathVariable("id") Long id){
         return userService.getUserById(id);

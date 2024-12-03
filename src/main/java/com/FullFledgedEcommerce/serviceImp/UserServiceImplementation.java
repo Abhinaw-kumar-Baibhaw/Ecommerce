@@ -3,10 +3,14 @@ package com.FullFledgedEcommerce.serviceImp;
 import com.FullFledgedEcommerce.entites.User;
 import com.FullFledgedEcommerce.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+
 
 @Service
 public class UserServiceImplementation implements UserService {
@@ -14,8 +18,12 @@ public class UserServiceImplementation implements UserService {
     @Autowired
     private com.FullFledgedEcommerce.repo.User userRepo;
 
+
     @Override
     public User createUser(User user) {
+        String password = user.getPassword();
+        String encode = new BCryptPasswordEncoder().encode(password);
+        user.setPassword(encode);
         return userRepo.save(user);
     }
 

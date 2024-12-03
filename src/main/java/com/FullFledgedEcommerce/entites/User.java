@@ -5,6 +5,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 
 @Entity
@@ -12,7 +18,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,6 +35,23 @@ public class User {
     private String phone;
 
     private String password;
+
+    public enum Roles {
+        USER, ADMIN, MODERATOR;
+    }
+
+    @Enumerated(EnumType.STRING)
+    private Roles role;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Collections.singletonList(() -> "ROLE_" + role.name());
+    }
+
+    @Override
+    public String getUsername() {
+        return this.email;
+    }
 
 
 }
