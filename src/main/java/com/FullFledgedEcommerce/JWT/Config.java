@@ -14,14 +14,13 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class Config {
-
 
     @Bean
     @Primary
@@ -35,26 +34,30 @@ public class Config {
     }
 
     @Bean
-    public AuthenticationProvider authProvider(){
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(myUserDetailsService());
-        return  provider;
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
+    @Bean
+    public AuthenticationProvider authProvider() {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(myUserDetailsService());
+        provider.setPasswordEncoder(passwordEncoder());
+        return provider;
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable);
         http.authorizeHttpRequests(request -> request
-                        .requestMatchers("/auth/**","/users/**")
+                        .requestMatchers("/auth/**")
                         .permitAll()
-//                        .requestMatchers("/users/**").hasRole("USER")
                         .anyRequest()
                         .authenticated())
-                .userDetailsService(myUserDetailsService())
+                .userDetailsService(myUserDetailsService()) // Ensure the custom user details service is used
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
-        http.authenticationManager(authenticationManagerBean(null));
+        http.authenticationManager(authenticationManagerBean(null)); // Authentication manager bean
         return http.build();
     }
 

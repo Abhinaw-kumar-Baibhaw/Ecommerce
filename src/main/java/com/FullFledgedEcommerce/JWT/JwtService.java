@@ -1,14 +1,14 @@
 package com.FullFledgedEcommerce.JWT;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.security.core.GrantedAuthority;
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import java.security.Key;
 import java.util.*;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -18,26 +18,15 @@ public class JwtService {
 
     private static final byte[] secretKey =("qXbFtb5dN8HG9j6+PhD7LDBb02fW3sP6M5LkW8nA0K8j34fB/3g7Wx2site").getBytes();
 
-    public String generateToken(String email, Collection<? extends GrantedAuthority> authorities) {
-
-        List<String> roles = authorities.stream()
-                .map(grantedAuthority -> "ROLE_" + grantedAuthority.getAuthority())
-                .collect(Collectors.toList());
-
+    public String generateToken(String email, String role) {
         return Jwts.builder()
-                .subject(email)
-                .claim("roles", roles)
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + TOKEN_VALIDITY))
+                .setSubject(email)
+                .claim("role","ROLE_"+ role)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + TOKEN_VALIDITY))
                 .signWith(getSignKey())
                 .compact();
     }
-
-    public Set<String> extractRoles(String token) {
-        Claims claims = getAllClaimsFromToken(token);
-        return new HashSet<>((List<String>) claims.get("roles"));
-    }
-
 
     private Key getSignKey() {
         return Keys.hmacShaKeyFor(secretKey);
@@ -49,11 +38,15 @@ public class JwtService {
      }
 
     private Claims getAllClaimsFromToken(String token) {
-        return Jwts.parser()
-                .setSigningKey(getSignKey())
-                .build()
-                .parseClaimsJws(token)
-                .getPayload();
+        try {
+            Claims claims = Jwts.parser()
+                    .setSigningKey(secretKey)
+                    .parseClaimsJws(token)
+                    .getBody();
+            return claims;
+        } catch (JwtException e) {
+            throw new RuntimeException("Invalid JWT token", e);
+        }
     }
 
     public boolean validateToken(String token, UserDetails userDetails){

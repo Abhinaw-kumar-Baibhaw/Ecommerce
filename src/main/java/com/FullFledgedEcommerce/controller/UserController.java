@@ -20,19 +20,19 @@ public class UserController {
     public User createUser(@RequestBody User user){
       return  userService.createUser(user);
     }
-
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/getAll")
     public List<User> getAll(){
         return userService.getAllUsers();
     }
 
-
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/getById/{id}")
     public Optional<User> getById(@PathVariable("id") Long id){
         return userService.getUserById(id);
     }
 
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/getByEmail/{email}")
     public User getByEmail(@PathVariable String email){
         return userService.getUserByEmail(email);
