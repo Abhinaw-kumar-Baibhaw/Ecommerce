@@ -54,10 +54,10 @@ public class Config {
                         .permitAll()
                         .anyRequest()
                         .authenticated())
-                .userDetailsService(myUserDetailsService()) // Ensure the custom user details service is used
+                .userDetailsService(myUserDetailsService())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
-        http.authenticationManager(authenticationManagerBean(null)); // Authentication manager bean
+        http.authenticationManager(authenticationManagerBean(null));
         return http.build();
     }
 

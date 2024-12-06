@@ -16,10 +16,12 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+
     @PostMapping("/create")
     public User createUser(@RequestBody User user){
       return  userService.createUser(user);
     }
+
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/getAll")
     public List<User> getAll(){

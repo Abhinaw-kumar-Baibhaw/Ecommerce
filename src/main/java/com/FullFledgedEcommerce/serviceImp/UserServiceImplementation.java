@@ -1,19 +1,22 @@
 package com.FullFledgedEcommerce.serviceImp;
 
+import com.FullFledgedEcommerce.entites.CustomerOrder;
 import com.FullFledgedEcommerce.entites.User;
 import com.FullFledgedEcommerce.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 
 @Service
 public class UserServiceImplementation implements UserService {
+
+    @Autowired
+    private RestTemplate restTemplate;
+
 
     @Autowired
     private com.FullFledgedEcommerce.repo.User userRepo;
@@ -30,11 +33,6 @@ public class UserServiceImplementation implements UserService {
     @Override
     public List<User> getAllUsers() {
        return userRepo.findAll();
-    }
-
-    @Override
-    public Optional<User> getUserById(Long id) {
-        return  userRepo.findById(id);
     }
 
     @Override
@@ -60,5 +58,22 @@ public class UserServiceImplementation implements UserService {
             userRepo.save(user1);
         }
         return "updated";
+    }
+
+    public Optional<User> getUserById(Long id) {
+        Optional<User> byId = userRepo.findById(id);
+        if (byId.isPresent()) {
+            User user = byId.get();
+            try {
+                String url = "http://FullFledgedOrder/orders/getUserOrders/" + user.getId();
+                CustomerOrder[] customerOrdersArray = restTemplate.getForObject(url, CustomerOrder[].class);
+                List<CustomerOrder> customerOrders = Arrays.asList(customerOrdersArray);
+                user.setCustomerOrder(customerOrders);
+                return Optional.of(user);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        }
+        return Optional.empty();
     }
 }
