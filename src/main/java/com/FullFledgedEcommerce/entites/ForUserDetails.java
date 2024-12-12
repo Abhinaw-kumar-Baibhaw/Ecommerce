@@ -12,7 +12,7 @@ public class ForUserDetails implements UserDetails {
     private final User user;
 
     public ForUserDetails(User userByEmail) {
-      this.user=userByEmail;
+      this.user = userByEmail;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.FullFledgedEcommerce.JWT;
 
 import com.FullFledgedEcommerce.entites.User;
+import com.FullFledgedEcommerce.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,7 +20,7 @@ public class LoginCredential {
     private AuthenticationManager authenticationManager;
 
     @Autowired
-    private com.FullFledgedEcommerce.repo.User userRepo;
+    private UserRepo userRepo;
 
     @Autowired
     private JwtService jwtService;
@@ -27,7 +28,7 @@ public class LoginCredential {
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody User user) {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(),user.getPassword()));
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
         String email = user.getEmail();
         User user1 = userRepo.getUserByEmail(email);
         String role =  user1.getRole().name();

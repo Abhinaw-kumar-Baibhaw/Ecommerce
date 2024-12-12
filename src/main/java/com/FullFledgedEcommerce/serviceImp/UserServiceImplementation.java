@@ -1,7 +1,9 @@
 package com.FullFledgedEcommerce.serviceImp;
 
 import com.FullFledgedEcommerce.entites.CustomerOrder;
+import com.FullFledgedEcommerce.entites.Product;
 import com.FullFledgedEcommerce.entites.User;
+import com.FullFledgedEcommerce.repo.UserRepo;
 import com.FullFledgedEcommerce.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -19,7 +21,7 @@ public class UserServiceImplementation implements UserService {
 
 
     @Autowired
-    private com.FullFledgedEcommerce.repo.User userRepo;
+    private UserRepo userRepo;
 
 
     @Override
@@ -69,6 +71,10 @@ public class UserServiceImplementation implements UserService {
                 CustomerOrder[] customerOrdersArray = restTemplate.getForObject(url, CustomerOrder[].class);
                 List<CustomerOrder> customerOrders = Arrays.asList(customerOrdersArray);
                 user.setCustomerOrder(customerOrders);
+                String url2 = "http://FullFledgedProductPart/products/getUserProducts/" + user.getId();
+                Product[] products = restTemplate.getForObject(url2,Product[].class);
+                List<Product> productsList = Arrays.asList(products);
+                user.setProducts(productsList);
                 return Optional.of(user);
             } catch (Exception e) {
                 System.out.println(e.getMessage());

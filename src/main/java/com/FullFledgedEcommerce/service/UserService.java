@@ -1,6 +1,5 @@
 package com.FullFledgedEcommerce.service;
 
-import com.FullFledgedEcommerce.entites.CustomerOrder;
 import com.FullFledgedEcommerce.entites.User;
 
 import java.util.List;
@@ -18,6 +17,6 @@ public interface UserService {
 
     void deleteUserById(Long id);
 
-    String updateUser(Long id,User user);
+    String updateUser(Long id, User user);
 
 }
