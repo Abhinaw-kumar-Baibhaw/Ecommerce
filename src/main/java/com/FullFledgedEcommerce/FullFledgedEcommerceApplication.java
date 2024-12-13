@@ -9,6 +9,7 @@ import org.springframework.web.client.RestTemplate;
 @SpringBootApplication
 public class FullFledgedEcommerceApplication {
 
+
 	@Bean
 	@LoadBalanced
 	public RestTemplate restTemplate(){
