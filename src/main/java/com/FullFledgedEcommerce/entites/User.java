@@ -2,6 +2,8 @@ package com.FullFledgedEcommerce.entites;
 
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,16 +15,22 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Size(min = 3, max = 20, message = "Firstname must be between 5 and 20 characters")
+    @NotBlank(message = "FirstName is required")
     @Column(name = "first_name")
     private String firstName;
 
     @Column(name = "last_name")
     private String lastName;
 
+    @NotBlank(message = "Email is required")
     private String email;
 
+    @NotBlank
     private String phone;
 
+    @NotBlank(message = "Password is required")
+    @Size(min = 8, message = "Password must be at least 8 characters")
     private String password;
 
     @Enumerated(EnumType.STRING)
